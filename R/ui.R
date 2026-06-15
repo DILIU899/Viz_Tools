@@ -19,6 +19,17 @@ details.advanced summary { cursor: pointer; font-size: 15px; font-weight: 900; c
 .metric-value { color: #101828; font-weight: 800; font-size: 16px; text-align: right; }
 .metric-empty { color: #98a2b3; font-size: 14px; }
 .formula-preview { background: white; border: 1px solid #d0d5dd; border-radius: 8px; padding: 14px 18px; margin-bottom: 12px; font-size: 22px; overflow-x: auto; }
+.dist-formula { background: white; border: 1px solid #d0d5dd; border-radius: 8px; padding: 14px 18px; margin-bottom: 12px; overflow-x: auto; }
+.dist-formula-main { font-size: 20px; margin-bottom: 10px; }
+.dist-source { color: #667085; font-size: 12px; margin-top: 8px; }
+.stats-panel { background: white; border: 1px solid #d0d5dd; border-radius: 8px; padding: 14px 18px; margin: 12px 0; max-width: 560px; }
+.stats-title { display: block; color: #344054; font-size: 15px; font-weight: 800; margin-bottom: 8px; }
+.stats-header, .stats-row { display: grid; grid-template-columns: minmax(0, 1fr) 140px; align-items: center; gap: 16px; }
+.stats-header { color: #667085; font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: .04em; border-bottom: 1px solid #d0d5dd; padding-bottom: 6px; }
+.stats-row { border-top: 1px solid #f2f4f7; padding: 10px 0; }
+.stats-row:first-of-type { border-top: 0; }
+.stats-formula { font-size: 16px; min-width: 0; overflow-x: auto; }
+.stats-value { color: #101828; font-weight: 800; font-size: 15px; text-align: right; }
 .code-preview { background: #101828; color: #f9fafb; border-radius: 8px; padding: 14px 16px; margin-top: 12px; font-size: 13px; line-height: 1.5; overflow-x: auto; }
 .code-preview code { color: #f9fafb; background: transparent; padding: 0; white-space: pre; }
 textarea.form-control { font-family: Menlo, Consolas, monospace; resize: vertical; min-height: 110px; }
@@ -26,9 +37,9 @@ textarea.form-control { font-family: Menlo, Consolas, monospace; resize: vertica
 
 mathjax_refresh_js <- "
 $(document).on('shiny:value', function(event) {
-  if (event.name !== 'formula_latex') return;
+  if (['formula_latex', 'dist_formula', 'dist_stats'].indexOf(event.name) === -1) return;
   setTimeout(function() {
-    var el = document.getElementById('formula_latex');
+    var el = document.getElementById(event.name);
     if (!el || !window.MathJax) return;
     if (window.MathJax.typesetPromise) {
       window.MathJax.typesetPromise([el]);
@@ -113,12 +124,14 @@ ui <- navbarPage(
       distribution_sidebar(),
       mainPanel(
         width = 9,
+        withMathJax(div(class = "dist-formula", uiOutput("dist_formula"))),
         plotlyOutput("dist_plot", height = "620px"),
         fluidRow(
           column(4, div(class = "metric", span(class = "metric-title", "Target quantile"), uiOutput("target_text"))),
           column(4, div(class = "metric", span(class = "metric-title", "Probe value"), uiOutput("probe_text"))),
           column(4, div(class = "metric", span(class = "metric-title", "Distribution"), uiOutput("type_text")))
         ),
+        withMathJax(div(class = "stats-panel", uiOutput("dist_stats"))),
         conditionalPanel("input.show_table", DTOutput("value_table"))
       )
     )

@@ -197,6 +197,38 @@ server <- function(input, output, session) {
     datatable(dat, options = list(pageLength = 10, scrollX = TRUE), rownames = FALSE)
   })
 
+  output$dist_formula <- renderUI({
+    info <- dist_info[[input$dist]]
+    tagList(
+      div(class = "dist-formula-main", tags$span(paste0("$$ ", info$formula, " $$"))),
+      div(class = "dist-source", paste("Parameterization:", info$family, "documentation"))
+    )
+  })
+
+  output$dist_stats <- renderUI({
+    cur <- current_dist()
+    info <- dist_info[[input$dist]]
+    values <- dist_stat_values(input$dist, cur$params)
+    tagList(
+      span(class = "stats-title", "Theoretical statistics"),
+      div(
+        class = "stats-header",
+        div("Formula"),
+        div("Value")
+      ),
+      div(
+        class = "stats-row",
+        div(class = "stats-formula", tags$span(paste0("$$ ", info$mean_formula, " $$"))),
+        div(class = "stats-value", pretty_num(values$mean))
+      ),
+      div(
+        class = "stats-row",
+        div(class = "stats-formula", tags$span(paste0("$$ ", info$var_formula, " $$"))),
+        div(class = "stats-value", pretty_num(values$var))
+      )
+    )
+  })
+
   fn_data <- reactive({
     validate(need(input$xmax > input$xmin, "x max must be greater than x min."))
     out <- tryCatch(

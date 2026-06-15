@@ -202,7 +202,7 @@ param_inputs <- function(dist_name) {
   defaults <- dist_defs[[dist_name]]$params
   lapply(names(defaults), function(nm) {
     step <- if (nm %in% c("size", "m", "n", "k")) 1 else 0.1
-    numericInput(paste0("param_", nm), nm, value = defaults[[nm]], step = step)
+    numericInput(paste0("param_", nm), param_label(dist_name, nm), value = defaults[[nm]], step = step)
   })
 }
 
