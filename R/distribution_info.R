@@ -10,6 +10,21 @@ dist_info <- list(
     mean = function(p) p$mean,
     var = function(p) p$sd^2
   ),
+  "Skew normal" = list(
+    family = "sn::dsn",
+    formula = "f(x)=\\frac{2}{\\omega}\\phi\\left(\\frac{x-\\xi}{\\omega}\\right)\\Phi\\left(\\alpha\\frac{x-\\xi}{\\omega}\\right)",
+    params = c(xi = "\\xi", omega = "\\omega", alpha = "\\alpha"),
+    mean_formula = "E[X]=\\xi+\\omega\\delta\\sqrt{\\frac{2}{\\pi}},\\ \\delta=\\frac{\\alpha}{\\sqrt{1+\\alpha^2}}",
+    var_formula = "\\mathrm{Var}(X)=\\omega^2\\left(1-\\frac{2\\delta^2}{\\pi}\\right)",
+    mean = function(p) {
+      delta <- p$alpha / sqrt(1 + p$alpha^2)
+      p$xi + p$omega * delta * sqrt(2 / pi)
+    },
+    var = function(p) {
+      delta <- p$alpha / sqrt(1 + p$alpha^2)
+      p$omega^2 * (1 - 2 * delta^2 / pi)
+    }
+  ),
   "Student t" = list(
     family = "stats::dt",
     formula = "f(x)=\\frac{\\Gamma((\\nu+1)/2)}{\\sqrt{\\nu\\pi}\\,\\Gamma(\\nu/2)}\\left(1+\\frac{x^2}{\\nu}\\right)^{-(\\nu+1)/2}",
@@ -199,7 +214,9 @@ latex_symbol_to_label <- function(x) {
     "\\nu" = "ν",
     "\\lambda" = "λ",
     "\\alpha" = "α",
-    "\\beta" = "β"
+    "\\beta" = "β",
+    "\\xi" = "ξ",
+    "\\omega" = "ω"
   )
   if (x %in% names(map)) return(unname(map[[x]]))
   x

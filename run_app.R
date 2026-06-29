@@ -2,7 +2,8 @@ required_packages <- c(
   "shiny",
   "plotly",
   "DT",
-  "gamlss.dist"
+  "gamlss.dist",
+  "sn"
 )
 
 missing_packages <- required_packages[!vapply(required_packages, requireNamespace, logical(1), quietly = TRUE)]

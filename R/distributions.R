@@ -37,6 +37,14 @@ dist_defs <- list(
     q = function(prob, p) qnorm(prob, p$mean, p$sd),
     range = function(p) qnorm(c(0.001, 0.999), p$mean, p$sd)
   ),
+  "Skew normal" = list(
+    type = "continuous", params = list(xi = 0, omega = 1, alpha = 4),
+    validate = function(p) p$omega > 0,
+    d = function(x, p) sn::dsn(x, xi = p$xi, omega = p$omega, alpha = p$alpha),
+    p = function(x, p) sn::psn(x, xi = p$xi, omega = p$omega, alpha = p$alpha),
+    q = function(prob, p) sn::qsn(prob, xi = p$xi, omega = p$omega, alpha = p$alpha),
+    range = function(p) sn::qsn(c(0.001, 0.999), xi = p$xi, omega = p$omega, alpha = p$alpha)
+  ),
   "Student t" = list(
     type = "continuous", params = list(df = 8),
     validate = function(p) p$df > 0,
@@ -192,7 +200,7 @@ dist_defs <- list(
 )
 
 dist_choices <- list(
-  "Continuous: location / scale" = c("Normal", "Student t", "Cauchy", "Logistic", "Laplace"),
+  "Continuous: location / scale" = c("Normal", "Skew normal", "Student t", "Cauchy", "Logistic", "Laplace"),
   "Continuous: positive support" = c("Half normal", "Chi-square", "F", "Exponential", "Gamma", "Log-normal", "Weibull"),
   "Continuous: bounded support" = c("Uniform", "Beta"),
   "Discrete: count / trials" = c("Binomial", "Poisson", "Geometric", "Negative binomial", "Hypergeometric", "Poisson inverse Gaussian")
